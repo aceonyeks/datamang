@@ -3,49 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ogechi's Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Library Management System</title>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="home">
-            <h1>Welcome to My Portfolio</h1>
-            <p>Discover my projects, skills, and contact information.</p>
-        </section>
-        <section id="about">
-            <h2>About Me</h2>
-            <p>Hello my name is Ogechi , i attend Bowie State University and i love to play tennis.</p>
-        </section>
-        <section id="projects">
-            <h2>Projects</h2>
-            <div>
-                <h3>Project 1</h3>
-                <p>A brief description of this project.</p>
-            </div>
-            <div>
-                <h3>Project 2</h3>
-                <p>A brief description of this project.</p>
-            </div>
-        </section>
-        <section id="contact">
-            <h2>Contact Me</h2>
-            <p>Email: <a href="Ace@gmail.com">ace@.com</a></p>
-        </section>
-    </main>
-    <footer>
-        <p>© 2024 Ogechi. All rights reserved.</p>
-    </footer>
+    <h1>Library Management System</h1>
+
+    <form id="borrowForm">
+        <input type="hidden" name="studentId" id="studentId">
+        <label for="bookIsbn">Book ISBN:</label>
+        <input type="text" id="bookIsbn" required>
+        <button type="submit">Borrow</button>
+    </form>
+
+    <h2>Borrowed Books</h2>
+    <ul id="borrowedBooks"></ul>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const borrowForm = document.getElementById('borrowForm');
+        const borrowedBooksList = document.getElementById('borrowedBooks');
+
+        borrowForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await axios.post('/borrow', {
+                    studentId: '101',
+                    bookId: document.getElementById('bookIsbn').value
+                });
+                alert(response.data.message);
+                fetchBorrowedBooks();
+            } catch (error) {
+                console.error(error);
+                alert('Error borrowing book');
+            }
+        });
+
+        async function fetchBorrowedBooks() {
+            try {
+                const response = await axios.get('/borrowed-books');
+                borrowedBooksList.innerHTML = '';
+                response.data.forEach(book => {
+                    const li = document.createElement('li');
+                    li.textContent = `${book.title} by ${book.author}`;
+                    borrowedBooksList.appendChild(li);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchBorrowedBooks();
+    </script>
 </body>
 </html>
-
